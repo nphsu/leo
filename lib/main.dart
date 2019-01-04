@@ -9,10 +9,23 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text('data'),
         ),
-        body: Card(child: Column(children: <Widget>[
-          Image.asset('assets/2419.JPG'),
-          Text("Food paradaice")
-        ],),),
+        body: Column(children: [
+          Container(
+            margin: EdgeInsets.all(10.0),
+            child: RaisedButton(
+              onPressed: () {},
+              child: Text('add product'),
+            ),
+          ),
+          Card(
+            child: Column(
+              children: <Widget>[
+                Image.asset('assets/2419.JPG'),
+                Text("Food paradaice")
+              ],
+            ),
+          ),
+        ]),
       ),
     );
   }
