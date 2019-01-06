@@ -84,23 +84,28 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      child: Form(
-        key: _formKey,
-        child: ListView(
-          children: <Widget>[
-            _buildTitleTextField(),
-            _buildTitleDescriptionField(),
-            _buildPriceTextField(),
-            SizedBox(
-              height: 10,
-            ),
-            RaisedButton(
-              child: Text('Save'),
-              onPressed: _submitForm,
-            )
-          ],
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Container(
+        margin: EdgeInsets.all(10.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              _buildTitleTextField(),
+              _buildTitleDescriptionField(),
+              _buildPriceTextField(),
+              SizedBox(
+                height: 10,
+              ),
+              RaisedButton(
+                child: Text('Save'),
+                onPressed: _submitForm,
+              )
+            ],
+          ),
         ),
       ),
     );
