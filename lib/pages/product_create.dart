@@ -12,9 +12,12 @@ class ProductCreatePage extends StatefulWidget {
 }
 
 class _ProductCreatePageState extends State<ProductCreatePage> {
-  String _titleValue;
-  String _descriptionValue;
-  double _priceValue;
+  final Map<String, dynamic> _formData = {
+    'title': null,
+    'description': null,
+    'price': null,
+    'image': 'assets/2419.JPG'
+  };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget _buildTitleTextField() {
@@ -27,9 +30,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String value) {
-        setState(() {
-          _titleValue = value;
-        });
+        _formData['title'] = value;
       },
     );
   }
@@ -43,9 +44,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String value) {
-        setState(() {
-          _descriptionValue = value;
-        });
+        _formData['description'] = value;
       },
     );
   }
@@ -60,9 +59,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String value) {
-        setState(() {
-          _priceValue = double.parse(value);
-        });
+        _formData['price'] = double.parse(value);
       },
     );
   }
@@ -72,13 +69,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
       return;
     }
     _formKey.currentState.save();
-    final Map<String, dynamic> product = {
-      'title': _titleValue,
-      'description': _descriptionValue,
-      'price': _priceValue,
-      'image': 'assets/2419.JPG'
-    };
-    widget.addProduct(product);
+    widget.addProduct(_formData);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
