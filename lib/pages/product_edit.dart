@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../models/product.dart';
+import '../scoped_models/products.dart';
 
 class ProductEditPage extends StatefulWidget {
-  final Function addProduct;
-  final Function updateProduct;
-  final Product product;
-  final int productIndex;
-
-  ProductEditPage(
-      {this.addProduct, this.updateProduct, this.product, this.productIndex});
-
   @override
   State<StatefulWidget> createState() {
     return _ProductEditPageState();
@@ -26,9 +20,35 @@ class _ProductEditPageState extends State<ProductEditPage> {
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Widget _buildTitleTextField() {
+  Widget _buildPageContent(BuildContext context, Product product) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Container(
+        margin: EdgeInsets.all(10.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              _buildTitleTextField(product),
+              _buildTitleDescriptionField(),
+              _buildPriceTextField(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildSubmitButton()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitleTextField(Product product) {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Title'),
+      initialValue: product == null ? '' : product.title,
       validator: (String value) {
         if (value.isEmpty && value.length < 5) {
           return 'Title is required and should be 5+ characters long.';
@@ -69,20 +89,21 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm(Function addProduct, Function updateProduct,
+      [int selectedProductIndex]) {
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
-    if (widget.product == null) {
-      widget.addProduct(Product(
+    if (selectedProductIndex == null) {
+      addProduct(Product(
           title: _formData['title'],
           description: _formData['description'],
           price: _formData['price'],
           image: _formData['image']));
     } else {
-      widget.updateProduct(
-          widget.productIndex,
+      updateProduct(
+          selectedProductIndex,
           Product(
               title: _formData['title'],
               description: _formData['description'],
@@ -92,32 +113,30 @@ class _ProductEditPageState extends State<ProductEditPage> {
     Navigator.pushReplacementNamed(context, '/products');
   }
 
+  Widget _buildSubmitButton() {
+    return ScopedModelDescendant<ProductsModel>(
+        builder: (BuildContext context, Widget child, ProductsModel model) {
+      return RaisedButton(
+        child: Text('Save'),
+        onPressed: () => _submitForm(model.addProduct, model.updateProduct, model.selectedProductIndex),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Container(
-        margin: EdgeInsets.all(10.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              _buildTitleTextField(),
-              _buildTitleDescriptionField(),
-              _buildPriceTextField(),
-              SizedBox(
-                height: 10,
+    return ScopedModelDescendant<ProductsModel>(
+        builder: (BuildContext context, Widget child, ProductsModel model) {
+      final Widget pageContent =
+          _buildPageContent(context, model.selectedProduct);
+      return model.selectedProductIndex == null
+          ? pageContent
+          : Scaffold(
+              appBar: AppBar(
+              title: Text(
+                'Edit Product',
               ),
-              RaisedButton(
-                child: Text('Save'),
-                onPressed: _submitForm,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+            ));
+    });
   }
 }
