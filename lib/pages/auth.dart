@@ -25,6 +25,14 @@ class _AuthPageState extends State<AuthPage> {
         image: AssetImage('assets/background.jpg'));
   }
 
+  Widget _buildEmailTextField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Email'
+      ),
+    );
+  }
+
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
       value: _formData['acceptTerms'],

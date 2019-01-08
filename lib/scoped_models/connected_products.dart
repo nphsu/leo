@@ -16,6 +16,11 @@ mixin ConnectedProductsModel on Model {
 
 mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
+  final String _productResourceUrl = 'xxx';
+
+  List<Product> get allProducts {
+    return _products;
+  }
 
   List<Product> get displayedProducts {
     if (_showFavorites) {
@@ -28,9 +33,77 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
+  int get selectedProductIndex {
+    return _products
+        .indexWhere((Product product) => product.id == _selProductId);
+  }
+
+  String get selectedProductId {
+    return _selProductId;
+  }
+
+  Product get selectedProduct {
+    if (selectedProductId == null) {
+      return null;
+    }
+    return _products
+        .firstWhere((Product product) => product.id == _selProductId);
+  }
+
   void toggleDisplayMode() {
     _showFavorites = !_showFavorites;
     notifyListeners();
+  }
+
+  void selectProduct(String productId) {
+    _selProductId = productId;
+    notifyListeners();
+  }
+
+  Future<bool> addProduct(
+      String title, String description, String image, double price) async {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://upload.wikimedia.org/wikipedia/commons/6/68/Chocolatebrownie.JPG',
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
+    };
+    try {
+      final http.Response response =
+          await http.post('xxx/products.json', body: json.encode(productData));
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Product newProduct = Product(
+          id: responseData['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
+      _products.add(newProduct);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateProduct(
+      String title, String description, String image, double price) {
+    return null;
   }
 
   Future<Null> fetchProducts() {
