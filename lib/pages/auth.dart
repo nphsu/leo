@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:leo/scoped_models/main.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -33,6 +35,15 @@ class _AuthPageState extends State<AuthPage> {
       },
       title: Text('Accept Terms'),
     );
+  }
+
+  void _submitForm(Function login) {
+    if (!_formData['acceptTerms']) {
+      return;
+    }
+    // _formKey.currentState.save();
+    login(_formData['email'], _formData['password']);
+    Navigator.pushReplacementNamed(context, '/products');
   }
 
   @override
@@ -72,12 +83,15 @@ class _AuthPageState extends State<AuthPage> {
                 SizedBox(
                   height: 10.0,
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/products');
+                ScopedModelDescendant<MainModel>(
+                  builder:
+                      (BuildContext cotext, Widget child, MainModel model) {
+                    return RaisedButton(
+                      child: Text('LOGIN'),
+                      onPressed: () => _submitForm(model.login),
+                    );
                   },
-                  child: Text('LOGIN'),
-                )
+                ),
               ],
             )));
   }
