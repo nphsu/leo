@@ -106,6 +106,23 @@ mixin ProductsModel on ConnectedProductsModel {
     return null;
   }
 
+  Future<bool> deleteProduct() {
+    _isLoading = true;
+    final deletedProductId = selectedProduct.id;
+    _products.removeAt(selectedProductIndex);
+    _selProductId = null;
+    notifyListeners();
+    return http.delete('xxx/products/${deletedProductId}.json').then((http.Response response) {
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    });
+  }
+
   Future<Null> fetchProducts() {
     _isLoading = true;
     notifyListeners();
