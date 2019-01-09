@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:scoped_model/scoped_model.dart';
 import '../widgets/ui_elements/title_default.dart';
-import '../scoped_models/products.dart';
 import '../models/product.dart';
 
 class ProductPage extends StatelessWidget {
-  final int productIndex;
-  ProductPage(this.productIndex);
+  final Product product;
+  ProductPage(this.product);
 
   Widget _buildAddressPriceRow(double price) {
     return Row(
@@ -40,9 +38,7 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<ProductsModel>(builder: (BuildContext context, Widget child, ProductsModel model){
-        final Product product = model.products[productIndex];
-        return Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: Text('Product Detail'),
         ),
@@ -64,9 +60,7 @@ class ProductPage extends StatelessWidget {
             )
           ],
         ),
-      );
-      }
-    ) 
+      ),
     );
   }
 }
